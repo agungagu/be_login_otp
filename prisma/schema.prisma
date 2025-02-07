@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./db.sqlite"
+}
+
+model User {
+  id                Int             @id @default(autoincrement())
+  email             String          @unique
+  password          String
+  otp               String?
+  otpHash           String?
+  otpExpires        DateTime?
+  verifycationToken String?         @unique
+  isVerified        Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  LoginActivity     LoginActivity[]
+}
+
+model LoginActivity {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], onDelete: Cascade, references: [id])
+  ipAddress String?
+  userAgent String?
+  action    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
